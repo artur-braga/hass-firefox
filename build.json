@@ -1,0 +1,10 @@
+{
+    "squash": false,
+    "build_from": {
+        "aarch64": "lscr.io/linuxserver/firefox",
+        "amd64": "lscr.io/linuxserver/firefox",
+        "armhf": "lscr.io/linuxserver/firefox",
+        "armv7": "lscr.io/linuxserver/firefox"
+    },
+    "args": {}
+}

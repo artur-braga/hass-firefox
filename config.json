@@ -1,0 +1,34 @@
+{
+    "name": "Firefox",
+    "version": "1",
+    "slug": "hafirefox",
+    "description": "Firefox Browser",
+    "arch": [
+      "aarch64",
+      "amd64",
+      "armhf",
+      "armv7" 
+    ],
+    "url": "https://www.mozilla.org/",
+    "startup": "application",
+    "boot": "auto",
+    "panel_icon": "mdi:firefox",
+    "ingress": true,
+    "environment": {
+      "PUID":"1000",
+      "PGID":"1000",
+      "TZ":"Europe/London"
+    },
+    "map": ["config:rw"],
+    "ingress_port": 3000,
+    "image": "linuxserver/firefox",
+    "options": {},
+    "ports": {
+    "3000/tcp": null
+    },
+    "ports_description": {
+      "3000/tcp": "Web interface (Not required for Home Assistant Ingress)"
+    },
+    "schema": {},
+    "hassio_role": "default"
+}

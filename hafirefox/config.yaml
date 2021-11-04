@@ -12,3 +12,7 @@ arch:
 panel_icon: "mdi:firefox"
 map:
   - config:rw
+ports:
+  5900/tcp: null
+ports_description:
+  5900/tcp: "Web interface"

@@ -1,6 +1,7 @@
 ---
 name: Firefox
 version: dev
+slug: hafirefox
 description: Firefox Browser
 init: false
 arch:

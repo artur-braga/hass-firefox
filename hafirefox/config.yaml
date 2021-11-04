@@ -10,9 +10,10 @@ arch:
   - armv7
   - i386
 panel_icon: "mdi:firefox"
+ingress: true
 map:
   - config:rw
 ports:
-  5900/tcp: null
+  5800/tcp: 5800
 ports_description:
-  5900/tcp: "Web interface"
+  5800/tcp: "Web interface"

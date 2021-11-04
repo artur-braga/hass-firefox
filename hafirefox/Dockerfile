@@ -1,18 +1,77 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base/amd64:5.2.0
+ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:10.2.0
 
 FROM ${BUILD_FROM}
 
-RUN apt-get update && apt-get install -y firefox-esr x11vnc xvfb && \
-    rm -rf /root/*.deb && \
-    \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* 
-RUN echo "exec firefox" > ~/.xinitrc && chmod +x ~/.xinitrc
-CMD ["/usr/bin/x11vnc", "-create", "-forever", "-nopw"]
+RUN \
+ echo "**** install packages ****" && \
+ apk add --no-cache --virtual=build-dependencies \
+	curl && \
+ if [ -z ${FIREFOX_VERSION+x} ]; then \
+	FIREFOX_VERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/v3.14/community/x86_64/APKINDEX.tar.gz" | tar -xz -C /tmp \
+	&& awk '/^P:firefox-esr$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://'); \
+ fi && \
+ apk add --no-cache \
+	firefox-esr==${FIREFOX_VERSION} && \
+ echo "**** cleanup ****" && \
+ apk del --purge \
+	build-dependencies && \
+ rm -rf \
+	/tmp/*
 
-# ports and volumes
-EXPOSE 5900
+RUN \
+    # Install required packages
+    echo "http://dl-3.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    apk --update --upgrade --no-cache add \
+      bash \
+      fluxbox \
+      git \
+      supervisor \
+      xvfb \
+      x11vnc \
+      procps \
+      && \
+    # Install noVNC
+    git clone --depth 1 https://github.com/novnc/noVNC.git /root/noVNC && \
+    git clone --depth 1 https://github.com/novnc/websockify /root/noVNC/utils/websockify && \
+    rm -rf /root/noVNC/.git && \
+    rm -rf /root/noVNC/utils/websockify/.git && \
+    apk del git 
+
+RUN \
+    apk --no-cache add \
+      py-pip \
+      build-base \
+      python3-dev &&\
+    pip install --no-cache-dir numpy &&\
+    apk del build-base python3-dev
+
+RUN cp /root/noVNC/vnc.html /root/noVNC/index.html
+RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$AUTOCONNECT\" ]; then sed -i \"s/'autoconnect', false/'autoconnect', '\$AUTOCONNECT'/\" /root/noVNC/app/ui.js; fi" /root/noVNC/utils/novnc_proxy
+RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$VNC_PASSWORD\" ]; then sed -i \"s/WebUtil.getConfigVar('password')/'\$VNC_PASSWORD'/\" /root/noVNC/app/ui.js; fi" /root/noVNC/utils/novnc_proxy
+RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$VIEW_ONLY\" ]; then sed -i \"s/UI.rfb.viewOnly = UI.getSetting('view_only');/UI.rfb.viewOnly = \$VIEW_ONLY;/\" /root/noVNC/app/ui.js; fi" /root/noVNC/utils/novnc_proxy
+
+# Also install some fonts
+# see: github.com/docker-library/openjdk/issues/73
+# RUN apk add ttf-dejavu
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN echo "exec firefox" > .xinitrc && chmod +x .xinitrc
+
+#Expose ports (noVNC)
+EXPOSE 5800
+ 
 VOLUME /config
+
+# Setup environment variables
+ENV HOME=/root \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    DISPLAY=:0.0 \
+    DISPLAY_WIDTH=1024 \
+    DISPLAY_HEIGHT=768
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
 # Build arguments
 ARG BUILD_ARCH

@@ -2,7 +2,7 @@ ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base/amd64:5.2.0
 
 FROM ${BUILD_FROM}
 
-RUN apt-get update && apt-get install -y firefox x11vnc xvfb && \
+RUN apt-get update && apt-get install -y firefox-esr x11vnc xvfb && \
     rm -rf /root/*.deb && \
     \
     apt-get clean && \

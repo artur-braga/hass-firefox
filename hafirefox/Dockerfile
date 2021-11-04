@@ -2,21 +2,12 @@ ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:10.2.0
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
-# Build arguments
-ARG BUILD_ARCH
-ARG BUILD_DATE
-ARG BUILD_DESCRIPTION
-ARG BUILD_NAME
-ARG BUILD_REF
-ARG BUILD_REPOSITORY
-ARG BUILD_VERSION
-
 RUN \
  echo "**** install packages ****" && \
  apk add --no-cache --virtual=build-dependencies \
 	curl && \
  if [ -z ${FIREFOX_VERSION+x} ]; then \
-	FIREFOX_VERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/v3.14/community/${BUILD_ARCH}/APKINDEX.tar.gz" | tar -xz -C /tmp \
+	FIREFOX_VERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/v3.14/community/x86_64/APKINDEX.tar.gz" | tar -xz -C /tmp \
 	&& awk '/^P:firefox-esr$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://'); \
  fi && \
  apk add --no-cache \
@@ -33,6 +24,15 @@ COPY /rootfs /
 # ports and volumes
 EXPOSE 3000
 VOLUME /config
+
+# Build arguments
+ARG BUILD_ARCH
+ARG BUILD_DATE
+ARG BUILD_DESCRIPTION
+ARG BUILD_NAME
+ARG BUILD_REF
+ARG BUILD_REPOSITORY
+ARG BUILD_VERSION
 
 # Labels
 LABEL \

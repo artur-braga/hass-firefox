@@ -84,7 +84,8 @@ jobs:
         id: flags
         run: |
           echo "::set-output name=date::$(date +"%Y-%m-%dT%H:%M:%SZ")"
-          from=$(yq --no-colors eval ".build_from.${{ matrix.architecture }}" "${{ needs.information.outputs.build }}")
+          from=$(yq --no-colors eval ".build_from.${{ matrix.architecture }}"\
+           "${{ needs.information.outputs.build }}")
           echo "::set-output name=from::${from}"
           if [[ "${{ matrix.architecture}}" = "amd64" ]]; then
             echo "::set-output name=platform::linux/amd64"
@@ -97,7 +98,8 @@ jobs:
           elif [[ "${{ matrix.architecture }}" = "aarch64" ]]; then
             echo "::set-output name=platform::linux/arm64/v8"
           else
-            echo "::error ::Could not determine platform for architecture ${{ matrix.architecture }}"
+            echo "::error ::Could not determine platform for architecture\
+             ${{ matrix.architecture }}"
             exit 1
           fi
       - name: 🏗  Login to GitHub Container Registry
@@ -119,7 +121,8 @@ jobs:
           file: ${{ needs.information.outputs.target }}/Dockerfile
           cache-from: |
             type=local,src=/tmp/.docker-cache
-            ghcr.io/hassio-addons/${{ needs.information.outputs.slug }}/${{ matrix.architecture }}:edge
+            ghcr.io/hassio-addons/${{ needs.information.outputs.slug }}/\
+            ${{ matrix.architecture }}:edge
           cache-to: type=local,mode=max,dest=/tmp/.docker-cache
           platforms: ${{ steps.flags.outputs.platform }}
           build-args: |

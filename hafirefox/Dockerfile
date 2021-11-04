@@ -6,8 +6,7 @@ RUN apt-get update && apt-get install -y firefox-esr x11vnc xvfb && \
     rm -rf /root/*.deb && \
     \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-
+    rm -rf /var/lib/apt/lists/* 
 RUN echo "exec firefox" > ~/.xinitrc && chmod +x ~/.xinitrc
 CMD ["v11vnc", "-create", "-forever"]
 

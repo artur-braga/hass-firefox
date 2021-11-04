@@ -1,0 +1,7 @@
+---
+channel: stable
+addons:
+    hafirefox:
+      repository: artur-braga/hass-firefox
+      target: hafirefox
+      image: ghcr.io/artur-braga/hass-firefox/{arch}

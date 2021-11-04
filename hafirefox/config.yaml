@@ -10,14 +10,5 @@ arch:
   - armv7
   - i386
 panel_icon: "mdi:firefox"
-ingress: true
-environment:
-  PUID: 1000
-  PGID: 1000
-  TZ: Europe/London
 map:
   - config:rw
-ports:
-  3000/tcp: null
-ports_description:
-  3000/tcp: "Web interface (Not required for Home Assistant Ingress)"

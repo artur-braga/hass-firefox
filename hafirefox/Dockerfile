@@ -1,28 +1,18 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:10.2.0
-# hadolint ignore=DL3006
+ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base/amd64:5.2.0
+
 FROM ${BUILD_FROM}
 
-RUN \
- echo "**** install packages ****" && \
- apk add --no-cache --virtual=build-dependencies \
-	curl && \
- if [ -z ${FIREFOX_VERSION+x} ]; then \
-	FIREFOX_VERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/v3.14/community/x86_64/APKINDEX.tar.gz" | tar -xz -C /tmp \
-	&& awk '/^P:firefox-esr$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://'); \
- fi && \
- apk add --no-cache \
-	firefox-esr==${FIREFOX_VERSION} && \
- echo "**** cleanup ****" && \
- apk del --purge \
-	build-dependencies && \
- rm -rf \
-	/tmp/*
+RUN apt-get update && apt-get install -y firefox x11vnc xvfb && \
+    rm -rf /root/*.deb && \
+    \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
 
-# add local files
-COPY /rootfs /
+RUN echo "exec firefox" > ~/.xinitrc && chmod +x ~/.xinitrc
+CMD ["v11vnc", "-create", "-forever"]
 
 # ports and volumes
-EXPOSE 3000
+EXPOSE 5900
 VOLUME /config
 
 # Build arguments

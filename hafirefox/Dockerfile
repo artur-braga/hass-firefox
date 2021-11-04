@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y firefox-esr x11vnc xvfb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* 
 RUN echo "exec firefox" > ~/.xinitrc && chmod +x ~/.xinitrc
-CMD ["v11vnc", "-create", "-forever"]
+CMD ["/usr/bin/x11vnc", "-create", "-forever"]
 
 # ports and volumes
 EXPOSE 5900

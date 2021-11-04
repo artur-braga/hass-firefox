@@ -1,0 +1,17 @@
+---
+name: Deploy
+
+# yamllint disable-line rule:truthy
+on:
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+  release:
+    types:
+      - published
+jobs:
+  workflows:
+    uses: hassio-addons/workflows/.github/workflows/base-deploy.yaml@main
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

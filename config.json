@@ -21,7 +21,7 @@
     },
     "map": ["config:rw"],
     "ingress_port": 3000,
-    "image": "lscr.io/linuxserver/firefox:latest",
+    "image": "artur-braga/ha-firefox",
     "options": {},
     "ports": {
     "3000/tcp": null

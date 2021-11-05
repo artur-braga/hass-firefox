@@ -55,9 +55,6 @@ RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$VIEW_ONLY\" ]; then sed -i \"s/UI.r
 # RUN apk add ttf-dejavu
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN echo "exec firefox" > .xinitrc && chmod +x .xinitrc
-
-#Expose ports (noVNC)
-EXPOSE 5800
  
 VOLUME /config
 

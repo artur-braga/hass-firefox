@@ -11,6 +11,7 @@ arch:
   - i386
 panel_icon: "mdi:firefox"
 ingress: true
+ingress_port: 5800
 map:
   - config:rw
 ports:

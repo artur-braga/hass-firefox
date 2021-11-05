@@ -3,27 +3,10 @@ ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:10.2.0
 FROM ${BUILD_FROM}
 
 RUN \
- echo "**** install packages ****" && \
- apk add --no-cache --virtual=build-dependencies \
-	curl && \
- if [ -z ${FIREFOX_VERSION+x} ]; then \
-	FIREFOX_VERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/v3.14/community/x86_64/APKINDEX.tar.gz" | tar -xz -C /tmp \
-	&& awk '/^P:firefox-esr$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://'); \
- fi && \
- apk add --no-cache \
-	firefox-esr==${FIREFOX_VERSION} && \
- echo "**** cleanup ****" && \
- apk del --purge \
-	build-dependencies && \
- rm -rf \
-	/tmp/*
-
-RUN \
     # Install required packages
     echo "http://dl-3.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk --update --upgrade --no-cache add \
       bash \
-      fluxbox \
       git \
       supervisor \
       xvfb \
@@ -44,6 +27,22 @@ RUN \
       python3-dev &&\
     pip install --no-cache-dir numpy &&\
     apk del build-base python3-dev
+
+RUN \
+ echo "**** install packages ****" && \
+ apk add --no-cache --virtual=build-dependencies \
+	curl && \
+ if [ -z ${FIREFOX_VERSION+x} ]; then \
+	FIREFOX_VERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/v3.14/community/x86_64/APKINDEX.tar.gz" | tar -xz -C /tmp \
+	&& awk '/^P:firefox-esr$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://'); \
+ fi && \
+ apk add --no-cache \
+	firefox-esr==${FIREFOX_VERSION} && \
+ echo "**** cleanup ****" && \
+ apk del --purge \
+	build-dependencies && \
+ rm -rf \
+	/tmp/*
 
 RUN cp /root/noVNC/vnc.html /root/noVNC/index.html
 RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$AUTOCONNECT\" ]; then sed -i \"s/'autoconnect', false/'autoconnect', '\$AUTOCONNECT'/\" /root/noVNC/app/ui.js; fi" /root/noVNC/utils/novnc_proxy

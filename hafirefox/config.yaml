@@ -12,9 +12,6 @@ arch:
 panel_icon: "mdi:firefox"
 ingress: true
 ingress_port: 5800
+ingress_entry: index.html?autoconnect=true
 map:
   - config:rw
-ports:
-  5800/tcp: 5800
-ports_description:
-  5800/tcp: "Web interface"

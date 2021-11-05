@@ -3,6 +3,14 @@ ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:10.2.0
 FROM ${BUILD_FROM}
 
 RUN \
+    apk --no-cache add \
+      py-pip \
+      build-base \
+      python3-dev &&\
+    pip install --no-cache-dir numpy &&\
+    apk del build-base python3-dev 
+
+RUN \
     # Install required packages
     echo "http://dl-3.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk --update --upgrade --no-cache add \
@@ -21,14 +29,6 @@ RUN \
     apk del git 
 
 RUN \
-    apk --no-cache add \
-      py-pip \
-      build-base \
-      python3-dev &&\
-    pip install --no-cache-dir numpy &&\
-    apk del build-base python3-dev
-
-RUN \
  echo "**** install packages ****" && \
  apk add --no-cache --virtual=build-dependencies \
 	curl && \
@@ -37,7 +37,10 @@ RUN \
 	&& awk '/^P:firefox-esr$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://'); \
  fi && \
  apk add --no-cache \
-	firefox-esr==${FIREFOX_VERSION} && \
+	firefox-esr==${FIREFOX_VERSION} \
+  # Also install some fonts
+  # see: github.com/docker-library/openjdk/issues/73
+  ttf-dejavu && \
  echo "**** cleanup ****" && \
  apk del --purge \
 	build-dependencies && \
@@ -49,9 +52,6 @@ RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$AUTOCONNECT\" ]; then sed -i \"s/'a
 RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$VNC_PASSWORD\" ]; then sed -i \"s/WebUtil.getConfigVar('password')/'\$VNC_PASSWORD'/\" /root/noVNC/app/ui.js; fi" /root/noVNC/utils/novnc_proxy
 RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$VIEW_ONLY\" ]; then sed -i \"s/UI.rfb.viewOnly = UI.getSetting('view_only');/UI.rfb.viewOnly = \$VIEW_ONLY;/\" /root/noVNC/app/ui.js; fi" /root/noVNC/utils/novnc_proxy
 
-# Also install some fonts
-# see: github.com/docker-library/openjdk/issues/73
-# RUN apk add ttf-dejavu
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN echo "exec firefox" > .xinitrc && chmod +x .xinitrc
  

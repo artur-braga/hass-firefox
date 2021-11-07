@@ -11,12 +11,13 @@
 start_x11_vnc_server() {
     bashio::log.debug "${FUNCNAME[0]}"
 
-    verbosity=" "
+    verbosity=""
     if bashio::config.has_value 'log_level'; then
         log_level=$(bashio::config 'log_level')
         if [ "$log_level" = "debug" ] || [ "$log_level" = "info" ]; then
         verbosity="-v"
         bashio::log.info "Debug level set to either debug or info, adding $verbosity to argument list"
+        fi
     fi
     
     bashio::log.info "Starting X VNC Server"

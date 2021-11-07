@@ -15,3 +15,11 @@ ingress_port: 5800
 ingress_entry: index.html?autoconnect=true
 map:
   - config:rw
+options:
+  log_level: info
+  display_width: 1024
+  display_height: 768
+schema:
+  log_level: list(debug|info|warning|error)
+  display_width: int?
+  display_height: int?

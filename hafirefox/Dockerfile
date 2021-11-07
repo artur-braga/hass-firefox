@@ -8,15 +8,13 @@ RUN \
       build-base \
       python3-dev &&\
     pip install --no-cache-dir numpy &&\
-    apk del build-base python3-dev 
+    apk del build-base python3-dev
 
 RUN \
     # Install required packages
     echo "http://dl-3.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk --update --upgrade --no-cache add \
-      bash \
       git \
-      supervisor \
       xvfb \
       x11vnc \
       procps \
@@ -28,12 +26,21 @@ RUN \
     rm -rf /root/noVNC/utils/websockify/.git && \
     apk del git 
 
+# Build arguments
+ARG BUILD_ARCH
+ARG BUILD_DATE
+ARG BUILD_DESCRIPTION
+ARG BUILD_NAME
+ARG BUILD_REF
+ARG BUILD_REPOSITORY
+ARG BUILD_VERSION
+
 RUN \
  echo "**** install packages ****" && \
  apk add --no-cache --virtual=build-dependencies \
 	curl && \
  if [ -z ${FIREFOX_VERSION+x} ]; then \
-	FIREFOX_VERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/v3.14/community/x86_64/APKINDEX.tar.gz" | tar -xz -C /tmp \
+	FIREFOX_VERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/v3.14/community/${BUILD_ARCH}/APKINDEX.tar.gz" | tar -xz -C /tmp \
 	&& awk '/^P:firefox-esr$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://'); \
  fi && \
  apk add --no-cache \
@@ -47,15 +54,14 @@ RUN \
  rm -rf \
 	/tmp/*
 
+# Setup noVNC
 RUN cp /root/noVNC/vnc.html /root/noVNC/index.html
 RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$AUTOCONNECT\" ]; then sed -i \"s/'autoconnect', false/'autoconnect', '\$AUTOCONNECT'/\" /root/noVNC/app/ui.js; fi" /root/noVNC/utils/novnc_proxy
 RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$VNC_PASSWORD\" ]; then sed -i \"s/WebUtil.getConfigVar('password')/'\$VNC_PASSWORD'/\" /root/noVNC/app/ui.js; fi" /root/noVNC/utils/novnc_proxy
 RUN sed -i "/wait ${proxy_pid}/i if [ -n \"\$VIEW_ONLY\" ]; then sed -i \"s/UI.rfb.viewOnly = UI.getSetting('view_only');/UI.rfb.viewOnly = \$VIEW_ONLY;/\" /root/noVNC/app/ui.js; fi" /root/noVNC/utils/novnc_proxy
 
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Setup x11vnc to start always with firefox
 RUN echo "exec firefox" > .xinitrc && chmod +x .xinitrc
- 
-VOLUME /config
 
 # Setup environment variables
 ENV HOME=/root \
@@ -67,16 +73,9 @@ ENV HOME=/root \
     DISPLAY_WIDTH=1024 \
     DISPLAY_HEIGHT=768
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
-
-# Build arguments
-ARG BUILD_ARCH
-ARG BUILD_DATE
-ARG BUILD_DESCRIPTION
-ARG BUILD_NAME
-ARG BUILD_REF
-ARG BUILD_REPOSITORY
-ARG BUILD_VERSION
+# Copy root filesystem
+COPY rootfs /
+VOLUME /config
 
 # Labels
 LABEL \

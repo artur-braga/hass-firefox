@@ -1,0 +1,10 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Home Assistant Artur Braga's Add-on: hafirefox
+# Runs x11vnc script
+# ==============================================================================
+
+
+bashio::log.info "Starting x11vnc..."
+
+exec /usr/bin/x11vnc.sh

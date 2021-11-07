@@ -1,0 +1,10 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Home Assistant Artur Braga's Add-on: hafirefox
+# Runs noVNC script
+# ==============================================================================
+
+
+bashio::log.info "Starting noVNC..."
+
+exec /usr/bin/noVNC.sh

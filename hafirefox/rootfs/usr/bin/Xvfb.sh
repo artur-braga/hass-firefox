@@ -15,6 +15,6 @@ start_x_window_virtual_framebuffer() {
     height=$(bashio::config 'display_height')
 
     bashio::log.info "Starting X Window Virtual Framebuffer with the size: ${width}x${height}x24"
-    Xvfb :0 -screen 0 "%(ENV_DISPLAY_WIDTH)s"x"%(ENV_DISPLAY_HEIGHT)s"x24
+    Xvfb :0 -screen 0 "$width"x"$height"x24
 }
 start_x_window_virtual_framebuffer "$@"

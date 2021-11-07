@@ -9,6 +9,7 @@ arch:
   - amd64
   - armv7
   - i386
+  # - armhf
 panel_icon: "mdi:firefox"
 ingress: true
 ingress_port: 5800

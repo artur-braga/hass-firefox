@@ -42,6 +42,7 @@ RUN \
  if [ -z ${FIREFOX_VERSION+x} ]; then \
   arch="${BUILD_ARCH}" \
   && if [ "${BUILD_ARCH}" = "amd64" ]; then arch="x86_64"; fi \
+  && if [ "${BUILD_ARCH}" = "i386" ]; then arch="x86"; fi \
 	&& FIREFOX_VERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/v3.14/community/${arch}/APKINDEX.tar.gz" | tar -xz -C /tmp \
 	&& awk '/^P:firefox-esr$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://'); \
  fi && \
